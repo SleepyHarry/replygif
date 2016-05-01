@@ -4,20 +4,30 @@ import requests
 
 slack_url = 'https://slack.com/api/chat.postMessage'
 
+token = open('.token').read().strip()
+slackbot_im_channel_id = open('.sbim').read().strip()
 
-def post_image_message(image_url, channel_id, token):
-    message = {
-        'token': token,
-        'channel': channel_id,
+
+def construct_message(image_url):
+    return {
         'text': '',
-        'attachments': json.dumps([
+        'attachments': [
             {
                 'pretext': '',
                 'image_url': image_url,
             }
-        ])
+        ]
     }
 
-    response = requests.post(slack_url, data=message)
 
-    return response
+def post_image_message(image_url, channel_id, token):
+    message = construct_message(image_url)
+
+    message.update({
+        'token': token,
+        'channel': channel_id,
+    })
+
+    message['attachments'] = json.dumps(message['attachments'])
+
+    return requests.post(slack_url, data=message)
