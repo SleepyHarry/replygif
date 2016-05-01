@@ -7,7 +7,7 @@ slack_url = 'https://slack.com/api/chat.postMessage'
 
 if os.path.exists('.token'):
     token = open('.token').read().strip()
-else if os.environ.get('SLACK_TOKEN'):
+elif os.environ.get('SLACK_TOKEN'):
     token = os.environ['SLACK_TOKEN']
 else:
     token = None
@@ -15,7 +15,7 @@ else:
 
 if os.path.exists('.sbim'):
    slackbot_im_channel_id = open('.sbim').read().strip()
-else if os.environ.get('SLACKBOT_CHANNEL_ID.'):
+elif os.environ.get('SLACKBOT_CHANNEL_ID.'):
    slackbot_im_channel_id = os.environ['SLACKBOT_CHANNEL_ID.']
 else:
    slackbot_im_channel_id = None
