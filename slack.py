@@ -15,8 +15,8 @@ else:
 
 if os.path.exists('.sbim'):
    slackbot_im_channel_id = open('.sbim').read().strip()
-elif os.environ.get('SLACKBOT_CHANNEL_ID.'):
-   slackbot_im_channel_id = os.environ['SLACKBOT_CHANNEL_ID.']
+elif os.environ.get('SLACKBOT_CHANNEL_ID'):
+   slackbot_im_channel_id = os.environ['SLACKBOT_CHANNEL_ID']
 else:
    slackbot_im_channel_id = None
 
@@ -36,14 +36,12 @@ def construct_message(image_url):
     }
 
 
-def post_image_message(image_url, channel_id):
-    message = construct_message(image_url)
-
-    message.update({
+def post_image_message(message_data, channel_id):
+    message_data.update({
         'token': chat_token,
         'channel': channel_id,
     })
 
-    message['attachments'] = json.dumps(message['attachments'])
+    message_data['attachments'] = json.dumps(message_data['attachments'])
 
-    return requests.post(slack_url, data=message)
+    return requests.post(slack_url, data=message_data)

@@ -1,3 +1,5 @@
+import json
+
 import gif
 import slack
 
@@ -13,12 +15,13 @@ def test():
 
 
 @app.route('/gif/', methods=['GET', 'POST'])
+@app.route('/gif/as_me/', methods=['GET', 'POST'])
 def main():
     data = request.form
 
     token = data.get('token')
     if token != slack.expected_token:
-        abort(403)
+        abort(403, 'got invalid token: {}'.format(token))
 
     tag = data.get('text')
 
@@ -26,15 +29,28 @@ def main():
 
     message_data = slack.construct_message(gif_url)
 
-    return jsonify(message_data)
+    if '/as_me/' in request.path:
+        message_data.update({
+            'as_user': True,
+        })
+
+        source_channel_id = data.get('channel_id')
+        source_channel_name = data.get('channel_name')
+
+        response = slack.post_image_message(message_data, source_channel_id)
+        response_data = json.loads(response.text)
+
+        if not response_data['ok']:
+            return '', 400
+
+        return '', 200
+    else:
+        message_data.update({
+            'response_type': 'in_channel',
+        })
+    
+        return jsonify(message_data)
 
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-#gif_url = gif.random_gif('thumbs up')
-#gif_url = gif.random_gif()
-#
-#response = slack.post_image_message(gif_url, slackbot_im_channel_id, token)
-#response.raise_for_status()
