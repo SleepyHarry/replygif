@@ -6,11 +6,11 @@ import requests
 slack_url = 'https://slack.com/api/chat.postMessage'
 
 if os.path.exists('.token'):
-    token = open('.token').read().strip()
+    chat_token = open('.token').read().strip()
 elif os.environ.get('SLACK_TOKEN'):
-    token = os.environ['SLACK_TOKEN']
+    chat_token = os.environ['SLACK_TOKEN']
 else:
-    token = None
+    chat_token = None
 
 
 if os.path.exists('.sbim'):
@@ -19,6 +19,9 @@ elif os.environ.get('SLACKBOT_CHANNEL_ID.'):
    slackbot_im_channel_id = os.environ['SLACKBOT_CHANNEL_ID.']
 else:
    slackbot_im_channel_id = None
+
+
+expected_token = os.environ.get('EXPECTED_TOKEN')
 
 
 def construct_message(image_url):
@@ -33,11 +36,11 @@ def construct_message(image_url):
     }
 
 
-def post_image_message(image_url, channel_id, token):
+def post_image_message(image_url, channel_id):
     message = construct_message(image_url)
 
     message.update({
-        'token': token,
+        'token': chat_token,
         'channel': channel_id,
     })
 

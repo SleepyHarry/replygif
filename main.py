@@ -1,7 +1,7 @@
 import gif
 import slack
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, abort
 
 
 app = Flask(__name__)
@@ -15,6 +15,10 @@ def test():
 @app.route('/gif/', methods=['GET', 'POST'])
 def main():
     data = request.form
+
+    token = data.get('token')
+    if token != slack.expected_token:
+        abort(403)
 
     tag = data.get('text')
 
