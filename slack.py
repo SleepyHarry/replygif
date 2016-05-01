@@ -1,11 +1,24 @@
+import os
 import json
 import requests
 
 
 slack_url = 'https://slack.com/api/chat.postMessage'
 
-token = open('.token').read().strip()
-slackbot_im_channel_id = open('.sbim').read().strip()
+if os.path.exists('.token'):
+    token = open('.token').read().strip()
+else if os.environ.get('SLACK_TOKEN'):
+    token = os.environ['SLACK_TOKEN']
+else:
+    token = None
+
+
+if os.path.exists('.sbim'):
+   slackbot_im_channel_id = open('.sbim').read().strip()
+else if os.environ.get('SLACKBOT_CHANNEL_ID.'):
+   slackbot_im_channel_id = os.environ['SLACKBOT_CHANNEL_ID.']
+else:
+   slackbot_im_channel_id = None
 
 
 def construct_message(image_url):
