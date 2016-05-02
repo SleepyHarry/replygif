@@ -15,7 +15,6 @@ def test():
 
 
 @app.route('/gif/', methods=['GET', 'POST'])
-@app.route('/gif/as_me/', methods=['GET', 'POST'])
 def main():
     data = request.form
 
@@ -33,28 +32,20 @@ def main():
     gif_url = gif.random_gif(tag)
 
     message_data = slack.construct_message(gif_url)
+    message_data.update({
+        'as_user': True,
+    })
 
-    if '/as_me/' in request.path:
-        message_data.update({
-            'as_user': True,
-        })
+    source_channel_id = data.get('channel_id')
+    source_channel_name = data.get('channel_name')
 
-        source_channel_id = data.get('channel_id')
-        source_channel_name = data.get('channel_name')
+    response = slack.post_image_message(message_data, source_channel_id)
+    response_data = json.loads(response.text)
 
-        response = slack.post_image_message(message_data, source_channel_id)
-        response_data = json.loads(response.text)
+    if not response_data['ok']:
+        return '', 400
 
-        if not response_data['ok']:
-            return '', 400
-
-        return '', 200
-    else:
-        message_data.update({
-            'response_type': 'in_channel',
-        })
-    
-        return jsonify(message_data)
+    return '', 200
 
 
 if __name__ == '__main__':
