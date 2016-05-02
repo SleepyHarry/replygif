@@ -25,6 +25,11 @@ def main():
 
     tag = data.get('text')
 
+    if tag == '--help' or tag == '-h':
+        return jsonify({
+            'text': 'possible tags:\n\t' + '\n\t'.join(gif.all_tags),
+        })
+
     gif_url = gif.random_gif(tag)
 
     message_data = slack.construct_message(gif_url)
